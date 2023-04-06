@@ -1,0 +1,120 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: guestbook-v1
+  labels:
+    app: guestbook
+    version: "1.0"
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: guestbook
+  template:
+    metadata:
+      labels:
+        app: guestbook
+        version: "1.0"
+    spec:
+      containers:
+      - name: guestbook
+        image: ibmcom/guestbook:v1
+        ports:
+        - name: http-server
+          containerPort: 3000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: guestbook
+  labels:
+    app: guestbook
+spec:
+  ports:
+  - port: 3000
+    targetPort: http-server
+  selector:
+    app: guestbook
+  type: LoadBalancer
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis-master
+  labels:
+    app: redis
+    role: master
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis
+      role: master
+  template:
+    metadata:
+      labels:
+        app: redis
+        role: master
+    spec:
+      containers:
+      - name: redis-master
+        image: redis:3.2.9
+        ports:
+        - name: redis-server
+          containerPort: 6379
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-master
+  labels:
+    app: redis
+    role: master
+spec:
+  ports:
+  - port: 6379
+    targetPort: redis-server
+  selector:
+    app: redis
+    role: master
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis-slave
+  labels:
+    app: redis
+    role: slave
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: redis
+      role: slave
+  template:
+    metadata:
+      labels:
+        app: redis
+        role: slave
+    spec:
+      containers:
+      - name: redis-slave
+        image: ibmcom/guestbook-redis-slave:v2
+        ports:
+        - name: redis-server
+          containerPort: 6379
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-slave
+  labels:
+    app: redis
+    role: slave
+spec:
+  ports:
+  - port: 6379
+    targetPort: redis-server
+  selector:
+    app: redis
+    role: slave
