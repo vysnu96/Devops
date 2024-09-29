@@ -41,11 +41,11 @@ for i, link in enumerate(links):
         span = link.find('span')
         if span:  # Ensure there's a <span> inside the <a>
             hyperlinkCounter = hyperlinkCounter + 1
-            print(hyperlinkCounter, span.text)
+            #print(hyperlinkCounter, span.text)
             generic_list.append(span.text)
         else:  # If no <span> exists, extract the direct text inside <a>
             hyperlinkCounter = hyperlinkCounter + 1
-            print(hyperlinkCounter, link.text, hyperlinkCounter)
+            #print(hyperlinkCounter, link.text, hyperlinkCounter)
             generic_list.append(link.text)
 
 # Getting the list of movies in all languages
@@ -70,9 +70,9 @@ header = {"Content-Type": "application/json"}
 
 generic_payload = list({'chat_id': {chat_id}, 'text': generic})
 generic_res = requests.post(URL, headers=header, json=generic_payload)
-print(generic_res.json())
+print(generic_payload, generic_res.json())
 
 movies_payload = list({'chat_id': {chat_id}, 'text': movies})
 movies_res = requests.post(URL, headers=header, json=movies_payload)
-print(movies_res.json())
+print(movies_payload, movies_res.json())
 
