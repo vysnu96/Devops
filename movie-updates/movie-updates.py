@@ -68,13 +68,15 @@ movies = movies_text + "\n".join(movies_list)
 URL = f"https://api.telegram.org/bot{token}/sendMessage"
 header = {"Content-Type": "application/json"}
 
-generic_payload = list({'chat_id': {chat_id}, 'text': {generic}})
-generic_res = requests.post(URL, headers=header, json=generic_payload)
-print(generic)
+generic_payload = {'chat_id': {chat_id}, 'text': generic}
+gen_set = list(generic_payload)
+generic_res = requests.post(URL, headers=header, json=gen_set)
+#print(generic)
 print(generic_res.json())
 
-movies_payload = list({'chat_id': {chat_id}, 'text': {movies}})
-movies_res = requests.post(URL, headers=header, json=movies_payload)
-print(movies)
+movies_payload = {'chat_id': {chat_id}, 'text': movies}
+mov_set = list(movies_payload)
+movies_res = requests.post(URL, headers=header, json=mov_set)
+#print(movies)
 print(movies_payload, movies_res.json())
 
