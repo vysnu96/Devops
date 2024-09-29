@@ -20,7 +20,7 @@ jobs:
           command: |
             pwd
             ls -ltr
-            python ~/movie-updates/movie-updates.py
+            python movie-updates/movie-updates.py
 
 workflows:
   send-updates: 
