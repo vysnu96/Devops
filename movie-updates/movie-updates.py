@@ -62,8 +62,11 @@ generic_text = ("List of latest 10 series, english movies listed in website. Our
 movies_text = ("List of latest 10 movies in all languages listed in website. Our data may vary. Please "
                "check website for integrity\n")
 
-generic = list(generic_text + "\n".join(generic_list))
-movies = list(movies_text + "\n".join(movies_list))
+# generic = list(generic_text + "\n".join(generic_list))
+# movies = list(movies_text + "\n".join(movies_list))
+
+generic = "\n".join(generic_list)
+movies = "\n".join(movies_list)
 
 URL = f"https://api.telegram.org/bot{token}/sendMessage"
 header = {"Content-Type": "application/json"}
