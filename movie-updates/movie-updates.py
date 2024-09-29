@@ -68,6 +68,9 @@ movies_text = ("List of latest 10 movies in all languages listed in website. Our
 generic = "\n".join(generic_list)
 movies = "\n".join(movies_list)
 
+print(type(generic))
+print(type(movies))
+
 URL = f"https://api.telegram.org/bot{token}/sendMessage"
 header = {"Content-Type": "application/json"}
 
