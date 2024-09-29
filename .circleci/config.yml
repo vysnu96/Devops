@@ -7,7 +7,7 @@ jobs:
   movie-updates:
     machine:
       image: ubuntu-2204:2024.05.1
-    resource_class: small
+    resource_class: medium
     environment:
       TOKEN: $TOKEN
       CHAT_ID: $CHAT_ID
