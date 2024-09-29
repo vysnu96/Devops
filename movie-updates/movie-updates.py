@@ -65,14 +65,14 @@ movies_text = ("List of latest 10 movies in all languages listed in website. Our
 generic = generic_text + "\n".join(generic_list)
 movies = movies_text + "\n".join(movies_list)
 
-URL = "https://api.telegram.org/bot{TOKEN}/sendMessage"
+URL = f"https://api.telegram.org/bot{token}/sendMessage"
 header = {"Content-Type": "application/json"}
 
-generic_payload = {'chat_id': {CHAT_ID}, 'text': generic}
+generic_payload = {'chat_id': {chat_id}, 'text': generic}
 generic_res = requests.post(URL, headers=header, json=generic_payload)
 print(generic_res.json())
 
-movies_payload = {'chat_id': {CHAT_ID}, 'text': movies}
+movies_payload = {'chat_id': {chat_id}, 'text': movies}
 movies_res = requests.post(URL, headers=header, json=movies_payload)
 print(movies_res.json())
 
