@@ -8,6 +8,9 @@ jobs:
     docker:
       - image: cimg/python:3.12
     resource_class: small
+    environment:
+      TOKEN: $TOKEN
+      CHAT_ID: $CHAT_ID
     steps:
       - checkout
       - run:
