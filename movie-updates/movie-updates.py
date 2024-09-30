@@ -69,14 +69,14 @@ URL = f"https://api.telegram.org/bot{token}/sendMessage"
 header = {"Content-Type": "application/json"}
 
 generic_payload = {'chat_id': {chat_id}, 'text': generic}
-gen_set = list(generic_payload)
-generic_res = requests.post(URL, headers=header, json=gen_set)
+gen_list = list(generic_payload)
+generic_res = requests.post(URL, headers=header, json=gen_list)
 #print(generic)
 print(generic_res.json())
 
 movies_payload = {'chat_id': {chat_id}, 'text': movies}
-mov_set = list(movies_payload)
-movies_res = requests.post(URL, headers=header, json=mov_set)
+mov_list = list(movies_payload)
+movies_res = requests.post(URL, headers=header, json=mov_list)
 #print(movies)
-print(movies_payload, movies_res.json())
+print(mov_list, movies_res.json())
 
