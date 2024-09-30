@@ -79,7 +79,7 @@ print(generic_res.json())
 
 movies_payload = {'chat_id': chat_id, 'text': movies}
 mov_list = list(movies_payload.values())
-movies_res = requests.post(URL, headers=header, json=mov_list)
+movies_res = requests.post(URL, headers=header, data=mov_list)
 #print(movies)
 print(mov_list, movies_res.json())
 
