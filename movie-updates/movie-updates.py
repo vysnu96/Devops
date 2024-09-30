@@ -78,5 +78,5 @@ movies_payload = {'chat_id': {chat_id}, 'text': movies}
 mov_list = list(movies_payload)
 movies_res = requests.post(URL, headers=header, json=mov_list)
 #print(movies)
-print(mov_list, movies_res.json())
+print(mov_list, movies_res)
 
