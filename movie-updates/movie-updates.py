@@ -65,18 +65,21 @@ movies_text = ("List of latest 10 movies in all languages listed in website. Our
 generic = generic_text + "\n".join(generic_list)
 movies = movies_text + "\n".join(movies_list)
 
+generic = generic.replace('\xa0', ' ').strip()
+movies = movies.replace('\xa0', ' ').strip()
+
 URL = f"https://api.telegram.org/bot{token}/sendMessage"
 header = {"Content-Type": "application/json"}
 
-generic_payload = {'chat_id': {chat_id}, 'text': generic}
-gen_list = list(generic_payload)
+generic_payload = {'chat_id': chat_id, 'text': generic}
+gen_list = list(generic_payload.values())
 generic_res = requests.post(URL, headers=header, json=gen_list)
 #print(generic)
 print(generic_res.json())
 
-movies_payload = {'chat_id': {chat_id}, 'text': movies}
-mov_list = list(movies_payload)
+movies_payload = {'chat_id': chat_id, 'text': movies}
+mov_list = list(movies_payload.values())
 movies_res = requests.post(URL, headers=header, json=mov_list)
 #print(movies)
-print(mov_list, movies_res)
+print(mov_list, movies_res.json())
 
