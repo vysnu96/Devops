@@ -7,7 +7,7 @@ services:
     - 9090:9090
     volumes:
     - prometheus-data:/prometheus
-    - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    - ./prometheus-compose.yml:/etc/prometheus/prometheus.yml
     command:
     - '--web.enable-lifecycle'
     - '--config.file=/etc/prometheus/prometheus.yml'
