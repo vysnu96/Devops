@@ -16,7 +16,7 @@ spec:
       app: wordpress
       environment: development
       tier: frontend
-  replicas: 2
+  replicas: 1
   strategy:
     rollingUpdate:
       maxSurge: 25%
@@ -85,23 +85,23 @@ spec:
         volumeMounts:
         - name: wordpress-app
           mountPath: /var/www/html
-        - name: apache-config
-          mountPath: /etc/apache2
-#side car for exposing metrics
-      - name: apache-exporter
-        image: bitnami/apache-exporter:1.0.9
-        ports:
-          - containerPort: 9117
-            name: metrics
-        args:
-          - '--scrape_uri=http://127.0.0.1/server-status?auto'
+        # - name: apache-config
+        #   mountPath: /etc/apache2
+# #side car for exposing metrics
+#       - name: apache-exporter
+#         image: bitnami/apache-exporter:1.0.9
+#         ports:
+#           - containerPort: 9117
+#             name: metrics
+#         args:
+#           - '--scrape_uri=http://127.0.0.1/server-status?auto'
       volumes:
         - name: wordpress-app
           hostPath:
             path: /mnt/disks/wordpress-app
-        - name: apache-config
-          configMap:
-            name: apache-config
+        # - name: apache-config
+        #   configMap:
+        #     name: apache-config
       restartPolicy: Always
 ---
 
