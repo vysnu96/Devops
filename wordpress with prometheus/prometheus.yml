@@ -12,6 +12,7 @@ runtime:
 
 rule_files:
 - "rules.yaml"
+- "alert-manager.yaml"
 
 scrape_configs:
 # - job_name: prometheus
