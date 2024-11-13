@@ -138,3 +138,61 @@ subjects:
   - kind: ServiceAccount
     name: prometheus
     namespace: default
+---
+# https://kubernetes.io/docs/concepts/workloads/controllers/deployment/
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: alert-manager
+  namespace: default
+  labels:
+    app: alerting
+spec:
+  selector:
+    matchLabels:
+      app: alerting
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: alerting
+    spec:
+      containers:
+      - name: alert-manager
+        image: prom/alertmanager:v0.27.0
+        imagePullPolicy: IfNotPresent
+        # env:
+        # - name: ACCEPT_EULA
+        #   value: "Y"
+        # - name: DB_HOST
+        #   valueFrom:
+        #     configMapKeyRef:
+        #       name: myjob
+        #       key: DB_HOST
+        ports:
+        - containerPort: 9093
+          name: alert-manager
+      restartPolicy: Always
+---
+# https://kubernetes.io/docs/concepts/services-networking/service/
+apiVersion: v1
+kind: Service
+metadata:
+  name: alert-manager
+  namespace: default
+spec:
+  selector:
+    app: alerting
+  type: NodePort
+  ports:
+  - name: alert-manager
+    protocol: TCP
+    port: 9093
+    targetPort: 9093
+    nodePort: 30004
+---
