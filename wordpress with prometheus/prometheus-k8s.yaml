@@ -29,51 +29,10 @@ spec:
         environment: development
         tier: monitoring
     spec:
-      # initContainers:
-        # Init containers are exactly like regular containers, except:
-          # - Init containers always run to completion.
-          # - Each init container must complete successfully before the next one starts.
       containers:
       - name: prometheus
         image: prom/prometheus:v2.55.0
         imagePullPolicy: IfNotPresent
-        # resources:
-        #   requests:
-        #     cpu: 100m
-        #     memory: 100Mi
-        #   limits:
-        #     cpu: 100m
-        #     memory: 100Mi
-        # livenessProbe:
-        #   tcpSocket:
-        #     port: 3306
-        #   initialDelaySeconds: 5
-        #   timeoutSeconds: 5
-        #   successThreshold: 1
-        #   failureThreshold: 3
-        #   periodSeconds: 10
-        # readinessProbe:
-        #   httpGet:
-        #     path: /_status/healthz
-        #     port: 80
-        #   initialDelaySeconds: 5
-        #   timeoutSeconds: 2
-        #   successThreshold: 1
-        #   failureThreshold: 3
-        #   periodSeconds: 10
-        # env:
-        # - name: MYSQL_DATABASE
-        #   value: "wordpress"
-        # - name: DB_HOST
-        #   valueFrom:
-        #     configMapKeyRef:
-        #       name: myjob
-        #       key: DB_HOST
-        # - name: DB_HOST
-        #   valueFrom:
-        #     secretKeyRef:
-        #       name: myjob
-        #       key: MSSQL_SA_PASSWORD
         ports:
         - containerPort: 9090
           name: prometheus-port
@@ -81,8 +40,14 @@ spec:
         - name: prometheus-db
           mountPath: /prometheus
         - name: prometheus-configuration
-          mountPath: /etc/prometheus
-          #subPath: prometheus.yml
+          mountPath: /etc/prometheus/prometheus.yml
+          subPath: prometheus.yml
+        - name: rules-config
+          mountPath: /etc/prometheus/rules.yaml
+          subPath: rules.yaml
+        - name: alert-config
+          mountPath: /etc/prometheus/alert-manager.yaml
+          subPath: alert-manager.yaml
       volumes:
         - name: prometheus-db
           persistentVolumeClaim:
@@ -92,6 +57,12 @@ spec:
         - name: prometheus-configuration
           configMap:
             name: prometheus-configuration
+        - name: rules-config
+          configMap:
+            name: rules-config
+        - name: alert-config
+          configMap:
+            name: alert-config
       restartPolicy: Always
       serviceAccountName: prometheus
 ---
