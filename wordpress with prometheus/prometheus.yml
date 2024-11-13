@@ -14,6 +14,12 @@ rule_files:
 - "rules.yaml"
 - "alert-manager.yaml"
 
+alerting:
+  alertmanagers:
+  - static_configs:
+    - targets:
+      - alert-manager:9093
+
 scrape_configs:
 # - job_name: prometheus
 #   honor_timestamps: true
