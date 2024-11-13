@@ -1,0 +1,29 @@
+global:
+  resolve_timeout: 10s
+
+route:
+  group_by: ['severity']
+  receiver: 'telegram_notifications'
+
+receivers:
+  - name: 'telegram_notifications'
+    telegram_configs:
+      send_resolved: true
+      api_url: "https://api.telegram.org"
+      bot_token: ""
+      chat_id: 
+      message: |
+        *Alert:* {{ .CommonLabels.alertname }}
+
+        *Severity:* {{ .CommonLabels.severity }}
+        
+        *Description:* {{ .Annotations.description }}
+
+        *Time:* {{ .StartsAt }}
+
+        [More details]({{ .GeneratorURL }})
+      parse_mode: "Markdown"
+      http_config:
+        timeout: 10s
+        max_retries: 3
+        retry_interval: 5s
