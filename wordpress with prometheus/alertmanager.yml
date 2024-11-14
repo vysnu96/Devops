@@ -1,0 +1,35 @@
+
+global:
+  resolve_timeout: 1m
+  http_config:
+    follow_redirects: true
+    enable_http2: true
+    # timeout: 10s
+    # max_retries: 3
+    # retry_interval: 5s
+route:
+  receiver: telegram_notifications
+  group_by:
+  - severity
+
+receivers:
+- name: telegram_notifications
+  telegram_configs:
+  - send_resolved: true
+    http_config:
+      follow_redirects: true
+      enable_http2: true
+    api_url: "https://api.telegram.org"
+    bot_token: "7422793066:AAGn7AxNO5dqF6wrf40uydFfw9vL_LygOHw"
+    chat_id: -4586962289
+    message: |
+      *Alert:* {{ .CommonLabels.alertname }}
+
+      *Severity:* {{ .CommonLabels.severity }}
+      
+      *Description:* {{ .Annotations.description }}
+
+      *Time:* {{ .StartsAt }}
+
+      [More details]({{ .GeneratorURL }})
+    parse_mode: "Markdown"
