@@ -45,9 +45,6 @@ spec:
         - name: rules-config
           mountPath: /etc/prometheus/rules.yaml
           subPath: rules.yaml
-        - name: alert-config
-          mountPath: /etc/prometheus/alert-manager.yaml
-          subPath: alert-manager.yaml
       volumes:
         - name: prometheus-db
           persistentVolumeClaim:
@@ -60,9 +57,6 @@ spec:
         - name: rules-config
           configMap:
             name: rules-config
-        - name: alert-config
-          configMap:
-            name: alert-config
       restartPolicy: Always
       serviceAccountName: prometheus
 ---
@@ -177,6 +171,14 @@ spec:
         ports:
         - containerPort: 9093
           name: alert-manager
+        volumeMounts:
+        - name: alert-config
+          mountPath: /etc/alertmanager/alertmanager.yml
+          subPath: alertmanager.yml
+      volumes:
+      - name: alert-config
+        configMap:
+          name: alert-config
       restartPolicy: Always
 ---
 # https://kubernetes.io/docs/concepts/services-networking/service/
