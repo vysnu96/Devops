@@ -6,24 +6,24 @@ route:
   receiver: 'telegram_notifications'
 
 receivers:
-  - name: 'telegram_notifications'
-    telegram_configs:
-      send_resolved: true
-      api_url: "https://api.telegram.org"
-      bot_token: ""
-      chat_id: 
-      message: |
-        *Alert:* {{ .CommonLabels.alertname }}
+- name: 'telegram_notifications'
+  telegram_configs:
+    send_resolved: true
+    api_url: "https://api.telegram.org"
+    bot_token: ""
+    chat_id: 
+    message: |
+      *Alert:* {{ .CommonLabels.alertname }}
 
-        *Severity:* {{ .CommonLabels.severity }}
-        
-        *Description:* {{ .Annotations.description }}
+      *Severity:* {{ .CommonLabels.severity }}
+      
+      *Description:* {{ .Annotations.description }}
 
-        *Time:* {{ .StartsAt }}
+      *Time:* {{ .StartsAt }}
 
-        [More details]({{ .GeneratorURL }})
-      parse_mode: "Markdown"
-      http_config:
-        timeout: 10s
-        max_retries: 3
-        retry_interval: 5s
+      [More details]({{ .GeneratorURL }})
+    parse_mode: "Markdown"
+    http_config:
+      timeout: 10s
+      max_retries: 3
+      retry_interval: 5s
