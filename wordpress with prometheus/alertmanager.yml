@@ -9,7 +9,7 @@ global:
     # retry_interval: 5s
 route:
   receiver: 'pods_alert'
-  group_by: [alertname]
+  # group_by: [alertname]
   routes:
   - receiver: 'pods_alert'
     matchers:
