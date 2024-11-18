@@ -8,12 +8,25 @@ global:
     # max_retries: 3
     # retry_interval: 5s
 route:
-  receiver: telegram_notifications
-  group_by:
-  - severity
+  receiver: 'pods_alert'
+  group_by: [alertname]
+  routes:
+  - receiver: 'pods_alert'
+    matchers:
+    - namespace="default"
+  - receiver: 'pods_alert'
+    matchers:
+    - namespace="kube-system"
+  - receiver: 'cpu_usage'
+    matchers:
+    - usage="cpu"
+
+  # receiver: pods_alert
+  # group_by:
+  # - namespace
 
 receivers:
-- name: telegram_notifications
+- name: pods_alert
   telegram_configs:
   - send_resolved: true
     http_config:
@@ -24,12 +37,21 @@ receivers:
     chat_id: -4586962289
     message: |
       *Alert:* {{ .CommonLabels.alertname }}
-
-      *Severity:* {{ .CommonLabels.severity }}
       
       *Description:* {{ .Annotations.description }}
+    parse_mode: "Markdown"
 
-      *Time:* {{ .StartsAt }}
-
-      [More details]({{ .GeneratorURL }})
+- name: cpu_usage
+  telegram_configs:
+  - send_resolved: true
+    http_config:
+      follow_redirects: true
+      enable_http2: true
+    api_url: "https://api.telegram.org"
+    bot_token: "7422793066:AAGn7AxNO5dqF6wrf40uydFfw9vL_LygOHw"
+    chat_id: -4586962289
+    message: |
+      *Alert:* {{ .CommonLabels.alertname }}
+      
+      *Description:* {{ .Annotations.summary }}
     parse_mode: "Markdown"
