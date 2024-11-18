@@ -1,18 +1,43 @@
 groups:
+#rules configuration--------------------------------------
   - name: pod_count_rules
     rules:
-      # Recording Rule to count running pods
-      - record: num_running_pods
-        expr: sum(kube_pod_status_phase{phase="Running"})
+      - record: num_running_pods_default
+        expr: sum(kube_pod_status_phase{phase="Running", namespace="default"})
 
+      - record: num_running_pods_kubesystem
+        expr: sum(kube_pod_status_phase{phase="Running", namespace="kube-system"})
+  
+  - name: CPU_usage
+    rules:
+      - record: greater_than_30p
+        expr: 100 * (1 - avg(irate(node_cpu_seconds_total{mode="idle"}[5m])) by (instance))
+#alerts-configuration---------------------------------------
   - name: pod_count_alerts
     rules:
-      # Alert Rule to trigger if running pods > 10
-      - alert: HighNumberOfRunningPods
-        expr: num_running_pods > 10
-        for: 1m
+      - alert: Pods_default
+        expr: num_running_pods_default > 5
+        for: 10s
         labels:
-          severity: warning
+          namespace: default
         annotations:
-          summary: "High number of running pods"
-          description: "There are more than 10 running pods in the cluster (currently {{ $value }} pods)."
+          summary: "High number of running pods in default namespace"
+          description: "There are more than 5 running pods in the default namespae (currently {{ $value }} pods)."
+  
+      - alert: Pods_kubesyatem
+        expr: num_running_pods_kubesystem > 10
+        for: 10s
+        labels:
+          namespace: kube-system
+        annotations:
+          summary: "High number of running pods in kube-system namespace"
+          description: "There are more than 10 running pods in the kube-system namespace (currently {{ $value }} pods)."
+
+  - name: CPU_usage_alert
+    rules:
+      - alert: greater_than_30p
+        expr: greater_than_30p > 30
+        labels:
+          usage: cpu
+        annotations:
+          summary: "CPU usage greater than 30p"
