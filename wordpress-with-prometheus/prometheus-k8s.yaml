@@ -81,35 +81,6 @@ spec:
     nodePort: 30002 #host port
 ---
 
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: prometheus-db
-spec:
-  storageClassName: local-path
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 5Gi
----
-apiVersion: v1
-kind: PersistentVolume
-metadata:
-  name: prometheus-db
-spec:
-  capacity:
-    storage: 5Gi
-  accessModes:
-    - ReadWriteOnce
-  persistentVolumeReclaimPolicy: Retain
-  storageClassName: local-path
-  hostPath:
-    path: /mnt/disks/prometheus-db
-  claimRef:
-    namespace: default  # Namespace where the PVC is defined
-    name: prometheus-db # Name of the PVC
----
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
@@ -197,4 +168,3 @@ spec:
     port: 9093
     targetPort: 9093
     nodePort: 30004
----

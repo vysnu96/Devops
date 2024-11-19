@@ -124,32 +124,7 @@ spec:
     targetPort: 80 #container port
     nodePort: 30001 #hostport
 ---
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: wordpress-app
-spec:
-  storageClassName: local-storage
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 5Gi
----
-apiVersion: v1
-kind: PersistentVolume
-metadata:
-  name: wordpress-app
-spec:
-  capacity:
-    storage: 5Gi
-  accessModes:
-    - ReadWriteOnce
-  persistentVolumeReclaimPolicy: Retain
-  storageClassName: local-storage
-  hostPath:
-    path: /mnt/disks/wordpress-app
----
+
 # # https://kubernetes.io/docs/concepts/services-networking/ingress/
 # apiVersion: networking.k8s.io/v1
 # kind: Ingress
