@@ -33,6 +33,7 @@ spec:
       - name: prometheus
         image: prom/prometheus:v2.55.0
         imagePullPolicy: IfNotPresent
+        args: ["--config.file=/etc/prometheus/prometheus.yml", "--storage.tsdb.path=/prometheus", "--web.enable-lifecycle"]
         ports:
         - containerPort: 9090
           name: prometheus-port
