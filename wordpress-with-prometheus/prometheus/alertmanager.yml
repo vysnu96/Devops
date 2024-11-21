@@ -58,7 +58,7 @@ receivers:
 
 - name: slack-notifications
   slack_configs:
-  - api_url: 'https://hooks.slack.com/services/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'
+  - api_url: 'https://hooks.slack.com/services/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'
     channel: '#monitoring'
     send_resolved: true
     title: '{{ .CommonAnnotations.summary }}'
