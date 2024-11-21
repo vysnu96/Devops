@@ -41,3 +41,183 @@ groups:
           usage: cpu
         annotations:
           summary: "CPU usage greater than 30p"
+
+
+  - name: alerts-container
+    rules:
+
+      - record: job:container:state
+        expr: time() - sum by(name)(container_last_seen{instance=~".+47.+"}) 
+      - alert: ContainerStoppedRunningRecently
+        expr: job:container:state > 60
+        for: 1m
+        labels:
+          severity: warn
+          team: devops
+        annotations:
+          description: 'Container *{{ $labels.name }}* stopped running.'
+
+
+      - record: job:webapp:state
+        expr: time() - app_requests_created{job="my_app"} 
+      - alert: WebappRestartedRecently
+        expr: job:webapp:state < 120
+        for: 1m
+        labels:
+          severity: error
+          team: devops
+        annotations:
+          description: 'Job *{{ $labels.job }}* was recently restarted.'
+          
+
+      - record: job:webapp:probe
+        expr: probe_success{instance=~".+47.+"} 
+      - alert: WebAppUnreachable
+        expr: job:webapp:probe == 0
+        for: 1m
+        labels:
+          severity: urgent
+          team: devops
+        annotations:
+          description: 'Probe of *{{ $labels.instance }}* failed.'
+        
+  - name: alerts-instances
+    rules:
+
+      - record: job:node_cpu_seconds:usage
+        expr: ((sum without(cpu, mode)(irate(node_cpu_seconds_total{mode!="idle"}[5m]))/count without(cpu)(count without(mode)(node_cpu_seconds_total))) * 100)
+      - alert: CPURateAbove20%
+        expr: 60 > job:node_cpu_seconds:usage > 20
+        for: 1m
+        labels:
+          severity: warn
+          team: server
+        annotations:
+          description: 'CPU usage on `{{ $labels.instance }}` has reached *{{ $value }}%*.'
+          
+      - alert: CPURateAbove60%
+        expr: job:node_cpu_seconds:usage >= 60
+        for: 1m
+        labels:
+          severity: urgent
+          team: server
+        annotations:
+          description: 'CPU usage on `{{ $labels.instance }}` has reached *{{ $value }}%*.'
+          
+      - record: job:node_mem_available:usage
+        expr: (1-(node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100 
+      - alert: MemoryUsageAbove75%
+        expr: job:node_mem_available:usage > 75
+        for: 1m
+        labels:
+          severity: urgent
+          team: server
+        annotations:
+          description: 'Memory usage on `{{ $labels.instance }}` has reached *{{ $value }}%*.'
+          
+      - record: job:node_fs_free:avail
+        expr: ((sum by(instance)(node_filesystem_free_bytes)) / (sum by(instance)(node_filesystem_size_bytes))) * 100 
+      - alert: FreeDiskSpaceLessThan20%
+        expr: job:node_fs_free:avail < 20
+        for: 1m
+        labels:
+          severity: warn
+          team: server
+        annotations:
+          description: 'Free disk space on `{{ $labels.instance }}` is only at *{{ $value }}%*.'
+          
+      - record: job:node_fs_free:predict
+        expr: (predict_linear(node_filesystem_free_bytes{device=~"/dev/sda.+"}[1h], (6 * 3600))) / (node_filesystem_size_bytes{device=~"/dev/sda.+"}) * 100
+      - alert: FreeDiskSpaceProjectedToBeLessThan10%InSixHours
+        expr: job:node_fs_free:predict < 10
+        for: 1m
+        labels:
+          severity: error
+          team: server
+        annotations:
+          description: '`{{ $labels.instance }}` is expected to only have *{{ $value }}%* free disk space in 6 hours.'
+          
+      - record: job:node:up:state
+        expr: avg_over_time(up{job=~"node|windows"} [30s]) 
+      - alert: SomeInstancesAreDown
+        expr: job:node:up:state < 1
+        for: 1m
+        labels:
+          severity: warn
+          team: server
+        annotations:
+          description: '`{{ $labels.instance }}` is down.'
+          
+      - record: job:node:up:state:avg
+        expr: ((count((avg_over_time(up{job=~"node|windows"} [30s])) < 1) / count(up{job=~"node|windows"})) * 100)
+      - alert: LessThan15%OfInstancesDown
+        expr: job:node:up:state:avg < 15
+        for: 1m
+        labels:
+          severity: warn
+          team: server
+        annotations:
+          description: '*{{ $value }}%* of instances are running.'
+
+          
+      - alert: MoreThan50%InstancesDown
+        expr: job:node:up:state:avg >= 50
+        for: 1m
+        labels:
+          severity: urgent
+          team: server
+        annotations:
+          description: 'Only *{{ $value }}%* of instances are running.'
+
+          
+      - alert: "GameOver...Respawn?"
+        expr: count(job:node:up:state) - count(job:node:up:state == 0) == 1
+        for: 1m
+        labels:
+          severity: urgent
+          team: server
+        annotations:
+          description: 'You only have *{{ $value }}* instances running right now...'
+
+          
+  - name: alerts-prometheus
+    rules:
+
+      - alert: PrometheusConfigFailedReload
+        expr: prometheus_config_last_reload_successful == 0
+        for: 1m
+        labels:
+          severity: error
+          team: devops
+        annotations:
+          description: 'The Prometheus Server configuration failed to load successfully. Try using `promtool`.'
+
+
+ 
+      - alert: ServiceExporterDown
+        expr: up{job!~"node|windows|blackbox.+|my_app"} == 0
+        for: 1m
+        labels:
+          severity: error
+          team: devops
+        annotations:
+          description: 'Prometheus failed to communicate with the following exporter: *{{ $labels.job }}*.'
+
+
+  - name: dashboard-container-rules
+    rules:
+    
+      - record: container:mem:avg
+        expr: avg by(name)(rate(container_memory_usage_bytes{name=~".+"}[5m])) 
+
+      - record: container:cpu:avg
+        expr: avg by(name)(rate(container_cpu_usage_seconds_total{name=~".+"}[5m])) * 100
+
+      - record: container:webapp:requests:total
+        expr: rate(app_requests_total{job="my_app"}[5m])
+
+  - name: rules-misc
+    rules:
+    
+      - record: container:running:total
+        expr: count(container_last_seen{name=~".+"})
