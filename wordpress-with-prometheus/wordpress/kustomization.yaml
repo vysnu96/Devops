@@ -1,0 +1,8 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - wp-app-pv-pvc.yaml
+  - wp-db-pv-pvc.yaml
+  - wordpress-app-k8s.yaml
+  - wordpress-db-k8s.yaml

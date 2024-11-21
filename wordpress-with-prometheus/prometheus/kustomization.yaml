@@ -3,4 +3,4 @@ kind: Kustomization
 
 resources:
   - prometheus-k8s.yaml
-  - node-exporter.yaml
+  - prom-pv-pvc.yaml
