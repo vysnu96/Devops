@@ -29,6 +29,14 @@ spec:
         environment: development
         tier: monitoring
     spec:
+# Added this into prometheus deployment, because we got a error that said prometheus couldn’t create a TSDB with write access. So, the issue could be PVC where user in prometheus container couldn’t have access to PVC. One solution was run prometheus as root user. This is another solution.
+      initContainers:
+      - name: volume-permissions
+        image: busybox
+        command: ["sh", "-c", "chown -R 65534:65534 /prometheus && chmod -R 777 /prometheus"]
+        volumeMounts:
+        - name: prometheus-db
+          mountPath: /prometheus
       containers:
       - name: prometheus
         image: prom/prometheus:v2.55.0
@@ -88,8 +96,15 @@ metadata:
   name: prometheus
 rules:
   - apiGroups: [""]
-    resources: ["pods", "endpoints", "services"]
+    resources: ["pods", "endpoints", "services", "nodes"] #added nodes because job for role:node was shown in config page but didn't show up in targets page
     verbs: ["get", "list", "watch"]
+#Below permissions are needed for the prometheus service account to scrape metrics wrt to kubernetes-nodes job
+  - apiGroups: [""]
+    resources: ["nodes/proxy"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: [""]
+    resources: ["nodes/metrics"]
+    verbs: ["get"]
 
 ---
 apiVersion: rbac.authorization.k8s.io/v1

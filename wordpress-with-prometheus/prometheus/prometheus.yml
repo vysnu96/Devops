@@ -74,6 +74,14 @@ scrape_configs:
   - targets:
     - node-exporter.default.svc.cluster.local:9100
 
+- job_name: "kubernetes-nodes"
+  scheme: https  # Change from http to https
+  tls_config:
+    insecure_skip_verify: true
+  bearer_token: kubernetes-nodes-bearer-token
+  kubernetes_sd_configs:
+  - role: node
+
 # - job_name: kubernetes-pods
 #   honor_labels: true
 #   honor_timestamps: true
